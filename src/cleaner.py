@@ -243,8 +243,7 @@ def standardise_column_names(df: pd.DataFrame) -> pd.DataFrame:
         df.columns
         .str.strip()
         .str.lower()
-        .str.replace(" ", "_", regex=False)
-        .str.replace("-", "_", regex=False)
+        .str.replace(r"[\s-]+", "_", regex=True)
     )
     return df
 
