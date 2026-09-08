@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.pyc
+.ipynb_checkpoints/
+venv/
+.venv/
+data/raw/*.csv
+data/processed/*.csv
+.env
+.DS_Store
+Thumbs.db
+.vscode/
+my_project_src.egg-info

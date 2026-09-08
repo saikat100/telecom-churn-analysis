@@ -1,0 +1,12 @@
+pandas>=2.2.0
+numpy>=1.26.4
+matplotlib>=3.8.2
+seaborn>=0.13.2
+plotly>=5.18.0
+streamlit>=1.31.0
+scipy>=1.12.0
+pytest>=8.0.0
+jupyter>=1.0.0
+Ipykernel>=6.29.0
+python-dotenv>=1.0.1
+tabulate
