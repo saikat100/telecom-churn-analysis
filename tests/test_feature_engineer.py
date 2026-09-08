@@ -177,3 +177,26 @@ def test_hypothesis_registry_has_correct_columns():
 def test_hypothesis_registry_has_six_features():
     registry = get_feature_hypothesis_registry()
     assert len(registry) == 6
+
+
+# ── Tests: automated payer against the values the export actually uses ────────
+def test_automated_payer_matches_export_spelling():
+    df = pd.DataFrame({
+        "payment_method": ["Bank transfer", "Credit card", "Electronic check", "Mailed check"]
+    })
+    result = add_is_fully_automated_payer(df)
+    assert result["is_fully_automated_payer"].tolist() == [1, 1, 0, 0]
+
+
+def test_automated_payer_is_not_constant_on_real_data():
+    df = pd.DataFrame({
+        "payment_method": ["Bank transfer", "Electronic check", "Credit card", "Mailed check"]
+    })
+    result = add_is_fully_automated_payer(df)
+    assert result["is_fully_automated_payer"].nunique() == 2
+
+
+def test_automated_payer_handles_missing_payment_method():
+    df = pd.DataFrame({"payment_method": ["Bank transfer", None]})
+    result = add_is_fully_automated_payer(df)
+    assert result["is_fully_automated_payer"].tolist() == [1, 0]

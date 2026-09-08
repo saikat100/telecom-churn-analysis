@@ -22,6 +22,7 @@ from src.cleaner import (
     impute_categorical_missing,
     remove_duplicates,
     run_full_cleaning_pipeline,
+    standardise_categorical_values,
 )
 
 
@@ -235,3 +236,52 @@ def test_full_pipeline_returns_no_nulls_with_categorical_gaps():
     })
     result, _ = run_full_cleaning_pipeline(df)
     assert result.isnull().sum().sum() == 0
+
+# ── Tests: standardise_categorical_values ─────────────────────────────────────
+def test_gender_variants_collapse_to_two_categories():
+    df = pd.DataFrame({"gender": ["Male", "male", "M", "Female", "female", "F"]})
+    result, _ = standardise_categorical_values(df)
+    assert set(result["gender"]) == {"Male", "Female"}
+
+
+def test_contract_type_casing_collapses():
+    df = pd.DataFrame({"contract_type": ["Month-to-month", "month-to-month", "Two year"]})
+    result, _ = standardise_categorical_values(df)
+    assert result["contract_type"].nunique() == 2
+
+
+def test_standardise_categorical_values_reports_what_changed():
+    df = pd.DataFrame({"gender": ["Male", "M", "F"]})
+    _, audit = standardise_categorical_values(df)
+    assert audit["gender"]["values_replaced"] == 2
+    assert audit["gender"]["categories_after"] == 2
+
+
+def test_unknown_category_is_left_untouched():
+    df = pd.DataFrame({"gender": ["Male", "Unspecified"]})
+    result, _ = standardise_categorical_values(df)
+    assert "Unspecified" in set(result["gender"])
+
+
+def test_standardise_categorical_values_does_not_modify_input():
+    df = pd.DataFrame({"gender": ["male"]})
+    standardise_categorical_values(df)
+    assert df.loc[0, "gender"] == "male"
+
+
+def test_pipeline_leaves_no_case_duplicate_categories():
+    df = pd.DataFrame({
+        "customer_id": ["C1", "C2", "C3"],
+        "gender": ["Male", "male", "F"],
+        "senior_citizen": [0, 1, 0],
+        "tenure_months": [5, 10, 20],
+        "contract_type": ["Month-to-month", "month-to-month", "Two year"],
+        "payment_method": ["Bank transfer", "Mailed check", "Credit card"],
+        "dependents": ["Yes", "No", "Yes"],
+        "monthly_charges": [50.0, 60.0, 70.0],
+        "total_charges": ["250.0", "600.0", "1400.0"],
+        "churn": ["No", "Yes", "No"],
+    })
+    result, _ = run_full_cleaning_pipeline(df)
+    assert set(result["gender"]) == {"Male", "Female"}
+    assert result["contract_type"].nunique() == 2

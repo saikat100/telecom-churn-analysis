@@ -21,6 +21,22 @@ import numpy as np
 from typing import Tuple
 
 
+# ── Canonical Category Values ─────────────────────────────────────────────────
+# Maps every spelling seen in the raw export to the one value analysis uses.
+# Keys are matched case-insensitively.
+CANONICAL_VALUE_MAP = {
+    "gender": {
+        "male": "Male", "m": "Male",
+        "female": "Female", "f": "Female",
+    },
+    "contract_type": {
+        "month-to-month": "Month-to-month",
+        "one year": "One year",
+        "two year": "Two year",
+    },
+}
+
+
 # ── Type Corrections ───────────────────────────────────────────────────────────
 def fix_total_charges_type(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
     """
@@ -223,6 +239,61 @@ def strip_string_whitespace(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def standardise_categorical_values(df: pd.DataFrame) -> Tuple[pd.DataFrame, dict]:
+    """
+    Collapse inconsistent spellings of the same category into one canonical value.
+
+    Business justification: the source export records the same category in
+    several forms — 'Male', 'male', 'M' all mean the same customer group, and
+    'Month-to-month' and 'month-to-month' are one contract. groupby() treats
+    each spelling as a separate segment, so a churn rate reported for
+    'Month-to-month' silently excludes every customer stored in lower case.
+    That understates the size of a segment and misstates its churn rate.
+
+    Assumptions
+    -----------
+    - Matching is case-insensitive; only spelling and casing are corrected,
+      never the meaning of a value.
+    - A value not present in the canonical map is left untouched rather than
+      guessed at, so unexpected categories stay visible instead of being
+      silently folded into a neighbour.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+
+    Returns
+    -------
+    Tuple[pd.DataFrame, dict]
+        Cleaned DataFrame and a per-column audit of the replacements made.
+    """
+    df = df.copy()
+    audit = {}
+
+    for col, canonical in CANONICAL_VALUE_MAP.items():
+        if col not in df.columns:
+            continue
+
+        lookup = {variant.casefold(): target for variant, target in canonical.items()}
+        original = df[col]
+        replaced = original.map(
+            lambda v: lookup.get(v.casefold(), v) if isinstance(v, str) else v
+        )
+
+        changed = int((original != replaced).sum())
+        if changed:
+            variants = sorted(set(original[original != replaced].dropna()))
+            audit[col] = {
+                "values_replaced": changed,
+                "variants_found": variants,
+                "categories_before": int(original.nunique(dropna=True)),
+                "categories_after": int(replaced.nunique(dropna=True)),
+            }
+        df[col] = replaced
+
+    return df, audit
+
+
 def standardise_column_names(df: pd.DataFrame) -> pd.DataFrame:
     """
     Standardise all column names to lowercase with underscores.
@@ -275,6 +346,9 @@ def run_full_cleaning_pipeline(df: pd.DataFrame) -> Tuple[pd.DataFrame, dict]:
 
     df = strip_string_whitespace(df)
     audit["whitespace_stripped"] = True
+
+    df, category_audit = standardise_categorical_values(df)
+    audit["categorical_values_standardised"] = category_audit
 
     df, type_audit_count = fix_total_charges_type(df)
     audit["total_charges_type_fix"] = {"newly_null_created": type_audit_count}

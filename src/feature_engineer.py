@@ -242,8 +242,10 @@ def add_is_fully_automated_payer(df: pd.DataFrame) -> pd.DataFrame:
 
     Assumptions
     -----------
-    - 'Bank transfer (automatic)' and 'Credit card (automatic)' are
-      the two fully automated payment methods in this dataset.
+    - Bank transfer and credit card are the two fully automated payment
+      methods. The export records them both with and without the
+      '(automatic)' suffix, so matching is case-insensitive across both
+      spellings.
     - 'Electronic check' and 'Mailed check' require active customer
       action each billing cycle and are classified as manual.
 
@@ -256,9 +258,14 @@ def add_is_fully_automated_payer(df: pd.DataFrame) -> pd.DataFrame:
     pd.DataFrame
     """
     df = df.copy()
-    automated_methods = {"Bank transfer (automatic)", "Credit card (automatic)"}
+    automated_methods = {
+        "bank transfer", "bank transfer (automatic)",
+        "credit card", "credit card (automatic)",
+    }
     df["is_fully_automated_payer"] = (
-        df["payment_method"].isin(automated_methods)
+        df["payment_method"]
+        .astype("object")
+        .map(lambda v: v.casefold() in automated_methods if isinstance(v, str) else False)
     ).astype(int)
     return df
 

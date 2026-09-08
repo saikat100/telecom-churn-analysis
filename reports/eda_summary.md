@@ -6,7 +6,7 @@
 
 ## Q1 — Who Is Churning?
 
-**Contract type** is the single strongest predictor of churn. Customers on **Month-to-month** contracts churn at **27.5%**, compared to **18.2%** for **Two year** contract customers — a 1.5x difference.
+**Contract type** is the single strongest predictor of churn. Customers on **Month-to-month** contracts churn at **27.0%**, compared to **18.2%** for **Two year** contract customers — a 1.5x difference.
 
 **Internet service type** also differentiates churn significantly. **DSL** customers show a churn rate of **23.9%**. Statistical significance confirmed via Chi-Square test (p < 0.05) for both features.
 
@@ -25,16 +25,16 @@ Six behavioral features were tested against the churned vs retained population:
 | monthly_charges          |         70.124 |          70.285 | lower in churned  |
 | total_addon_services     |          1.614 |           1.656 | lower in churned  |
 | is_new_customer          |          0.066 |           0.045 | higher in churned |
+| is_fully_automated_payer |          0.402 |           0.397 | higher in churned |
 | has_any_streaming        |          0.506 |           0.506 | higher in churned |
-| is_fully_automated_payer |          0     |           0     | lower in churned  |
 
 The strongest behavioral separator is **tenure_months** (difference: -1.644). Multivariate analysis reveals that the combination of Month-to-month contract + Fiber optic internet creates compounding risk beyond what either factor predicts independently.
 
 ## Q4 — How Concentrated Is Churn Risk?
 
-The top 3 contract × internet service segments account for **60.4%** of all churned customers.
+The top 3 contract × internet service segments account for **65.2%** of all churned customers.
 
-The single highest-risk segment is: **Month-to-month × Fiber optic** with a churn rate of **28.5%** and a **27.9%** share of total churn.
+The single highest-risk segment is: **Month-to-month × Fiber optic** with a churn rate of **27.9%** and a **29.9%** share of total churn.
 
 This concentration means the retention team can address the majority of churn by focusing on a minority of the customer base — a highly efficient use of budget.
 
