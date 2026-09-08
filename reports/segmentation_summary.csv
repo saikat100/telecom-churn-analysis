@@ -1,0 +1,17 @@
+contract_type,tenure_group,total_customers,churned,avg_monthly_charges,avg_tenure,avg_addon_services,pct_automated_pay,churn_rate_pct
+Month-to-month,New (0-12m),481,157,70.33,5.9,1.67,0.0,32.6
+Month-to-month,Established (25-48m),844,232,71.12,36.7,1.71,0.0,27.5
+Month-to-month,Mid-term (13-24m),439,115,70.74,18.2,1.63,0.0,26.2
+month-to-month,Mid-term (13-24m),46,12,70.18,18.5,1.89,0.0,26.1
+month-to-month,Loyal (49m+),91,23,71.52,61.3,1.93,0.0,25.3
+Month-to-month,Loyal (49m+),850,214,69.85,60.2,1.64,0.0,25.2
+Two year,New (0-12m),210,50,68.05,6.5,1.54,0.0,23.8
+One year,New (0-12m),159,36,69.42,6.4,1.58,0.0,22.6
+One year,Loyal (49m+),336,76,71.7,60.4,1.62,0.0,22.6
+month-to-month,New (0-12m),35,7,67.61,6.3,1.31,0.0,20.0
+One year,Mid-term (13-24m),154,30,73.31,18.4,1.77,0.0,19.5
+One year,Established (25-48m),312,59,71.41,36.9,1.67,0.0,18.9
+month-to-month,Established (25-48m),78,14,68.55,36.8,1.46,0.0,17.9
+Two year,Mid-term (13-24m),197,34,69.06,18.4,1.68,0.0,17.3
+Two year,Established (25-48m),350,60,69.6,36.3,1.65,0.0,17.1
+Two year,Loyal (49m+),413,69,68.27,60.3,1.52,0.0,16.7
